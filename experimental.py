@@ -1,6 +1,7 @@
 import os
 import mfrc522 as MFRC522 
 from collections.abc import Iterable
+import threading
 import time
 import google.auth 
 import RPi.GPIO as GPIO 
@@ -11,11 +12,19 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow 
 
 
+# Allowing for future access to other blocks using the same function by checking against the following constants
+CONSTANT_MEMBER_ID_BLOCK = 10
+CONSTANT_ADD_DATA_BLOCK = 9
+
+
 # These are the user defined scopes, you can change this based on what the scanner needs to write/read to/from and you can add or remove scopes as listed in the google api
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] 
 linkedMachine = 3 # This is the number of the machine, please configure this based off of what the service-end code requires
-
 MIFAREReader = MFRC522.MFRC522() # If you are using the rc522 scanner keep this and all associated calls in the code, otherwise you'll lose certain functionality 
+
+# Status Identifiers
+currentUser = None
+currentStatus = "Inactive"
 
 
 sId = "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y" # The google sheet that is being written to by the software, in this case it is a test spreadsheet that will be changed later on 
@@ -107,7 +116,7 @@ def get_values(spreadsheet_id, range_name):
         return error
 
 
-
+# Will likely be deprecated in favor of new mechanism for holding cards while machine in use
 def status_updater(cardNum, tMaId):
     maIdc = get_values(
         "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
@@ -145,6 +154,16 @@ def status_updater(cardNum, tMaId):
     return "Done."
 
 
+def open_session(cardNum):
+    currentUser = cardNum
+    googThread = threading.Thread(target=status_updater, args=(1,))
+    
+    return
+
+def close_session(cardNum):
+    
+
+    return
 
 
 def read_data_from_block(block_num):
@@ -176,6 +195,8 @@ def read_data_from_block(block_num):
                         text_read = text_read + str(chr(i))
                 if text_read[0] == '0':
                     text_read = text_read[1:]
+                
+                open_session(text_read)
                 status_updater(text_read, linkedMachine)
                 print("Here is the read data: %s" % text_read)
                 MIFAREReader.MFRC522_StopCrypto1()
@@ -185,31 +206,15 @@ def read_data_from_block(block_num):
                 MIFAREReader.MFRC522_StopCrypto1()
         else:
             print("Auth error!!!!!!")
-    
+    elif(status != MIFAREReader.MI_OK and currentUser != None):
+        close_session(currentUser)
     return text_read
 
 
 
-
-
+goalBlock = 10
 
 
 if __name__ == "__main__":
-    # Pass: spreadsheet_id,  range_name, value_input_option and  _values
-    test = get_values(
-        "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
-        "CNC"
-    )
-    target = -1
-    print(test['values'])
-    print(len(test['values']))
-    for skibidi in range(len(test['values'])):
-        print(test['values'][skibidi][0])
-        if test['values'][skibidi][0] == 'skibidi':
-            target = skibidi
-    if(target == -1):
-        print("Not permitted to use this machine gamer!")
-    else:
-        print("Here is the index of where we found skibidi: ")
     print(read_data_from_block(10))
 
