@@ -180,16 +180,20 @@ def read_data_from_block(block_num):
     (status, uid) = MIFAREReader.MFRC522_Anticoll()
     
     if status == MIFAREReader.MI_OK:
-        key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-        MIFAREReader.MFRC522_SelectTag(uid)
+        key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF] # Default auth key, remains unchanged for most systems
+        MIFAREReader.MFRC522_SelectTag(uid) # 
         status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 2, key, uid)
         if status == MIFAREReader.MI_OK:
             print("Printed Read Data:")
             data = MIFAREReader.MFRC522_Read(2)
             print(data)
+            # This function checks if the returned data is iterable
             if isinstance(data, Iterable):
+                # Prints out to the console that the data is iterable and proceeds with constructing the string
                 print("Iterable data acquired...")
                 text_read = ""
+                
+                # Handles construction of the string ommiting any zeros and preventing the addition of a NULL escape code
                 for i in data:
                     if i == 0:
                         print("Nah.")
@@ -199,6 +203,7 @@ def read_data_from_block(block_num):
                 if text_read[0] == '0':
                     text_read = text_read[1:]
                 
+
                 if(currentUser == None):
                     open_session(text_read)
                 # status_updater(text_read, linkedMachine) This was formerly used to update the status on the google sheets using the google api, now we dont use it here
