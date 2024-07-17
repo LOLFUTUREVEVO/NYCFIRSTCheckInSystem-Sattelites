@@ -156,7 +156,7 @@ def read_data_from_block(block_num):
         print()
 
     (status, uid) = MIFAREReader.MFRC522_Anticoll()
-
+    
     if status == MIFAREReader.MI_OK:
         key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
         MIFAREReader.MFRC522_SelectTag(uid)
@@ -176,7 +176,6 @@ def read_data_from_block(block_num):
                         text_read = text_read + str(chr(i))
                 if text_read[0] == '0':
                     text_read = text_read[1:]
-                    print(text_read)
                 status_updater(text_read, linkedMachine)
                 print("Here is the read data: %s" % text_read)
                 MIFAREReader.MFRC522_StopCrypto1()
