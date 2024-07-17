@@ -116,7 +116,7 @@ def get_values(spreadsheet_id, range_name):
         return error
 
 
-# This is used in a slightly less than intended way, but it should work the same exact way
+# Communication with the status panel db 
 def status_updater(cardNum, tMaId):
     maIdc = get_values(
         "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
@@ -153,13 +153,14 @@ def status_updater(cardNum, tMaId):
         update_values(sId, cuserst, "USER_ENTERED", [[cardNum]])
     return "Done."
 
-
+# Begins a user session
 def open_session(cardNum):
     currentUser = cardNum
     currentStatus = "Active"
     googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
     return
 
+# Ends a user session
 def close_session(cardNum):
     currentUser = cardNum
     currentStatus = "Active"
@@ -167,7 +168,7 @@ def close_session(cardNum):
 
     return
 
-
+# The central function that allows for reading from the RFID reader and then using that data to input to the google sheets
 def read_data_from_block(block_num):
     text_read = ''
     # Scan For Cards
@@ -198,12 +199,13 @@ def read_data_from_block(block_num):
                 if text_read[0] == '0':
                     text_read = text_read[1:]
                 
-                if(currentUser):
-                    open_session
-                # status_updater(text_read, linkedMachine) This was formerly used
+                if(currentUser == None):
+                    open_session(text_read)
+                # status_updater(text_read, linkedMachine) This was formerly used to update the status on the google sheets using the google api, now we dont use it here
                 print("Here is the read data: %s" % text_read)
                 MIFAREReader.MFRC522_StopCrypto1()
             else:
+                # Just an error message returned by the program if the card reader fails to read a card, fairly unlikely thanks to the way we'll go about implementing it 
                 print("Error in reading")
                 text_read = ""
                 MIFAREReader.MFRC522_StopCrypto1()
@@ -217,7 +219,7 @@ def read_data_from_block(block_num):
 
 goalBlock = 10
 
-
+# The main method of the program, and acts as the main area where code is executed and sequenced from
 if __name__ == "__main__":
     print(read_data_from_block(10))
 
