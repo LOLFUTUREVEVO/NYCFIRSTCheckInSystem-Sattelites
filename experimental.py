@@ -1,6 +1,7 @@
 import os
 import mfrc522 as MFRC522 
 from collections.abc import Iterable
+import configparser
 import threading
 import time
 import google.auth 
@@ -11,6 +12,10 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials 
 from google_auth_oauthlib.flow import InstalledAppFlow 
 
+# Section for opening and reading the ini file into a single object
+with open("Data/machine.ini", "r") as file_object:
+    config_object.read_file(file_object)
+
 
 # Allowing for future access to other blocks using the same function by checking against the following constants
 CONSTANT_MEMBER_ID_BLOCK = 10
@@ -19,7 +24,10 @@ CONSTANT_ADD_DATA_BLOCK = 9
 
 # These are the user defined scopes, you can change this based on what the scanner needs to write/read to/from and you can add or remove scopes as listed in the google api
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"] 
-linkedMachine = 3 # This is the number of the machine, please configure this based off of what the service-end code requires
+
+# This is the number of the machine, please configure this based off of what the service-end code requires
+linkedMachine = int(config_object.get("MachineInfo", "MACHINEID")) 
+
 MIFAREReader = MFRC522.MFRC522() # If you are using the rc522 scanner keep this and all associated calls in the code, otherwise you'll lose certain functionality 
 
 # Status Identifiers
@@ -162,7 +170,7 @@ def open_session(cardNum):
 
 # Ends a user session
 def close_session(cardNum):
-    currentUser = cardNum
+    currentUser = None
     currentStatus = "Active"
     googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
 
@@ -224,7 +232,12 @@ def read_data_from_block(block_num):
 
 goalBlock = 10
 
+
+
+
+
+
 # The main method of the program, and acts as the main area where code is executed and sequenced from
 if __name__ == "__main__":
-    print(read_data_from_block(10))
+    print(read_data_from_block(goalBlock))
 
