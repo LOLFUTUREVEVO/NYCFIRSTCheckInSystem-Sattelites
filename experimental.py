@@ -38,6 +38,7 @@ currentStatus = "Inactive"
 sId = "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y" # The google sheet that is being written to by the software, in this case it is a test spreadsheet that will be changed later on 
 
 
+# Gets values from the google sheet that we defined in the sId field
 def update_values(spreadsheet_id, range_name, value_input_option, vs):
    
     # This section here will essentially just be the portion where google verifies access to the api using the OAuth2 system. Nothing really needs to be changed here just focus on creating the proper credentials.json from the google api
