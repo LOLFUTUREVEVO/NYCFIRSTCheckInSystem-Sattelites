@@ -16,36 +16,45 @@ function checkCardNumber(CardNumber) {
   
 
   // Get the range of card numbers.
+  var rangeOfUsers = tLogSheet.getRange('A:A');
   var rangeOfTimeouts = tLogSheet.getRange('D:D');
 
   // Get the values of the range.
-  var values = rangeOfTimeouts.getValues();
+  var values = rangeOfUsers.getValues();
+  var secVals = rangeOfTimeouts.getValues();
 
   // Check if the card number is found in the values.
-  var found = false;
+  var userInList = false;
+  var seshFinished = false;
   var indexOfFound;
   for (var i = values.length - 1; i > 0; --i) {
     if (values[i] == cardNumber) {
-      found = true;
+      userInList = true;
+      if(!secVals[i].isBlank()) {
+        seshFinished = true;
+      }
       indexOfFound = i;
       break;
     }
+    
   }
 
   // If the time out is found create a new row.
-  if (found) {
+  if (!userInList && !seshFinished) {
     var lastRow = sheet.getLastRow();
     var timestamp = new Date();
     var newCardRecord = sheet.getRange(lastRow+1,1).setValue(cardNumber);
     var newCardTimestamp = sheet.getRange(lastRow+1,9).setValue(timestamp);
-    //var newRow = sheet.appendRow();
-    //newRow[2] = cardNumber;
-   // newRow[3] = new Date();
-  } else {
+  } else if(userInList && !seshFinished) {
     // If the card number is found, add a timestamp to the next column.
     var timestamp = new Date();
     Logger.log(indexOfFound);
     sheet.getRange(indexOfFound + 1, 10).setValue(timestamp);
+  } else {
+    var lastRow = sheet.getLastRow();
+    var timestamp = new Date();
+    var newCardRecord = sheet.getRange(lastRow+1,1).setValue(cardNumber);
+    var newCardTimestamp = sheet.getRange(lastRow+1,9).setValue(timestamp);
   }
 }
 
