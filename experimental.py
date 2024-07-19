@@ -89,8 +89,6 @@ def update_values(spreadsheet_id, range_name, value_input_option, vs):
         print(f"An error occurred: {error}")
         return error
 
-
-
 # The comments in the previous update_values() function will essentially carry over to this function with little change aside from different parameters defined for the function 
 def get_values(spreadsheet_id, range_name):
     creds = None   
@@ -126,6 +124,22 @@ def get_values(spreadsheet_id, range_name):
     except HttpError as error:
         print(f"An error occurred: {error}")
         return error
+
+def read_data():
+    f = open('Data/test.json')
+    data = json.load(f)
+    f.close()
+    return data['user'],data['status']
+
+def write_data(person, status):
+    with open('Data/test.json', 'r+') as f:
+        data = json.load(f)
+        data['user'] = person # <--- add `id` value.
+        data['status'] = status
+        f.seek(0)        # <--- should reset file position to the beginning.
+        json.dump(data, f, indent=4)
+        f.truncate()     # remove remaining part
+        f.close()
 
 
 # Communication with the status panel db 
