@@ -12,6 +12,9 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials 
 from google_auth_oauthlib.flow import InstalledAppFlow 
 
+
+config_object = configparser.ConfigParser()
+
 # Section for opening and reading the ini file into a single object
 with open("Data/machine.ini", "r") as file_object:
     config_object.read_file(file_object)
@@ -174,7 +177,7 @@ def close_session(cardNum):
     currentUser = None
     currentStatus = "Active"
     googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
-
+ 
     return
 
 # The central function that allows for reading from the RFID reader and then using that data to input to the google sheets
