@@ -126,13 +126,13 @@ def get_values(spreadsheet_id, range_name):
         return error
 
 def read_data():
-    f = open('Data/test.json')
+    f = open('Data/StatusData.json')
     data = json.load(f)
     f.close()
     return data['user'],data['status']
 
 def write_data(person, status):
-    with open('Data/test.json', 'r+') as f:
+    with open('Data/StatusData.json', 'r+') as f:
         data = json.load(f)
         data['user'] = person # <--- add `id` value.
         data['status'] = status
