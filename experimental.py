@@ -1,6 +1,7 @@
 import os
 import mfrc522 as MFRC522 
 from collections.abc import Iterable
+import json
 import configparser
 import threading
 import time
