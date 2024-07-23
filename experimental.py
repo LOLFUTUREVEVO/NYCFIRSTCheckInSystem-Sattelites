@@ -181,21 +181,21 @@ def status_updater(cardNum, tMaId):
 
 # Begins a user session
 def open_session(cardNum):
-    currentUser = cardNum
-    currentStatus = "Active"
-    googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
+    write_data(cardNum, "Active")
+    googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,)) # This shit aint work for some reason, might've fucked up some of the function's arguments
+    googThread.start()
     return
 
 # Ends a user session
 def close_session(cardNum):
-    currentUser = None
-    currentStatus = "Active"
+    write_data(cardNum, "Inactive")
     googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
- 
+    googThread.start()
     return
 
 # The central function that allows for reading from the RFID reader and then using that data to input to the google sheets
 def read_data_from_block(block_num):
+    (currentUser, currentStatus) = read_data()
     text_read = ''
     # Scan For Cards
     (status, uid) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
@@ -230,7 +230,7 @@ def read_data_from_block(block_num):
                     text_read = text_read[1:]
                 
 
-                if(currentUser == None):
+                if(currentUser == "None"):
                     open_session(text_read)
                 # status_updater(text_read, linkedMachine) This was formerly used to update the status on the google sheets using the google api, now we dont use it here
                 print("Here is the read data: %s" % text_read)
