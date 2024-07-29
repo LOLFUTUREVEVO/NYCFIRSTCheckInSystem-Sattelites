@@ -243,7 +243,7 @@ def read_data_from_block(block_num):
                 MIFAREReader.MFRC522_StopCrypto1()
         else:
             print("Auth error!!!!!!")
-    elif(status != MIFAREReader.MI_OK and currentUser != None):
+    elif(status != MIFAREReader.MI_OK and currentUser != "None"):
         close_session(currentUser)
     return text_read
 
@@ -252,11 +252,9 @@ def read_data_from_block(block_num):
 goalBlock = 10
 
 
-
-
-
-
 # The main method of the program, and acts as the main area where code is executed and sequenced from
 if __name__ == "__main__":
-    print(read_data_from_block(goalBlock))
+    
+    while True:
+        print(read_data_from_block(goalBlock))
 
