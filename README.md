@@ -28,6 +28,6 @@ This software contains links and directives that point to a private google sprea
     sId = 'YOUR SPREADSHEET ID HERE' # Line 30 in quickstart.py
 ```
 
-# Experimental Branch Notice
+# GScripts
 
-Please note, this is the experimental branch with code that has yet to be fully tested on a model or even a final product, all code here should be thoroughly tested by anyone wishing to use it on a test server/service prior to using on a production model
+The js file found in the GScripts folder, is not intended for use as a javascript file for a webpage, but is meant for use on the google appscript page, so if you wish to use the functionality, please create a google appscript progject and paste the code while modifying the appropriate fields
