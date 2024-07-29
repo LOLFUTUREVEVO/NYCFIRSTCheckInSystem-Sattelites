@@ -254,7 +254,7 @@ goalBlock = 10
 
 # The main method of the program, and acts as the main area where code is executed and sequenced from
 if __name__ == "__main__":
-    
+    # might be some issues here and there but we gon work them out lol
     while True:
         print(read_data_from_block(goalBlock))
 
