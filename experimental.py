@@ -146,15 +146,15 @@ def write_data(person, status):
 # Communication with the status panel db 
 def status_updater(cardNum, tMaId):
     maIdc = get_values(
-        "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
+        sId,
         "MACHINEIDS"
     )
     cuserc = get_values(
-        "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
+        sId,
         "CURRENTUSERS"
     )
     ms_column = get_values(
-        "1zy07fuvIi8Zjh64PXCPjqMoRseUnffRyuTZYEWfh00Y",
+        sId,
         "MSTATUSES"
     )
     targ = -1
@@ -180,19 +180,6 @@ def status_updater(cardNum, tMaId):
         update_values(sId, cuserst, "USER_ENTERED", [[cardNum]])
     return "Done."
 
-# Begins a user session
-def open_session(cardNum):
-    write_data(cardNum, "Active")
-    googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,)) # This shit aint work for some reason, might've fucked up some of the function's arguments
-    googThread.start()
-    return
-
-# Ends a user session
-def close_session(cardNum):
-    write_data(cardNum, "Inactive")
-    googThread = threading.Thread(target=status_updater, args=(cardNum,linkedMachine,))
-    googThread.start()
-    return
 
 # The central function that allows for reading from the RFID reader and then using that data to input to the google sheets
 def read_data_from_block(block_num):
@@ -231,8 +218,7 @@ def read_data_from_block(block_num):
                     text_read = text_read[1:]
                 
 
-                if(currentUser == "None"):
-                    open_session(text_read)
+                status_updater(text_read, linkedMachine)
                 # status_updater(text_read, linkedMachine) This was formerly used to update the status on the google sheets using the google api, now we dont use it here
                 print("Here is the read data: %s" % text_read)
                 MIFAREReader.MFRC522_StopCrypto1()
@@ -243,8 +229,6 @@ def read_data_from_block(block_num):
                 MIFAREReader.MFRC522_StopCrypto1()
         else:
             print("Auth error!!!!!!")
-    elif(status != MIFAREReader.MI_OK and currentUser != "None"):
-        close_session(currentUser)
     return text_read
 
 
