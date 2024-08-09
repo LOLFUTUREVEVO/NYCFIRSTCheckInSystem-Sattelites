@@ -181,6 +181,37 @@ def status_updater(cardNum, tMaId):
     return "Done."
 
 
+def read_card():
+    target = ""
+    ic, ver, rev, support = pn532.get_firmware_version()
+    print('Found PN532 with firmware version: {0}.{1}'.format(ver, rev))
+
+    # Configure PN532 to communicate with MiFare cards
+    pn532.SAM_configuration()
+
+    print('Waiting for RFID/NFC card to read from!')
+    while True:
+        # Check if a card is available to read
+        uid = pn532.read_passive_target(timeout=0.5)
+        print('.', end="")
+        # Try again if no card is available.
+        if uid is not None:
+            break
+    print("Card Found, Reading number...")
+    key_a = b'\xFF\xFF\xFF\xFF\xFF\xFF'
+    # Now we try to go through all 16 sectors (each having 4 blocks)
+    try:
+        pn532.mifare_classic_authenticate_block(uid, block_number=target_sector,key_number=nfc.MIFARE_CMD_AUTH_A, key=key_a)
+        print("Block Number 2:",':', ''.join(['%s' % x for x in pn532.mifare_classic_read_block(target_sector)]))
+        for i in pn532.mifare_classic_read_block(target_sector):
+            if(i != 0):
+                target = target + chr(i)
+    except nfc.PN532Error as e:
+        print(e.errmsg)
+    int(target)
+    return target
+
+
 # The central function that allows for reading from the RFID reader and then using that data to input to the google sheets
 def read_data_from_block(block_num):
     (currentUser, currentStatus) = read_data()
