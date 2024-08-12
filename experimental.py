@@ -14,6 +14,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow 
 
 
+target_sector = 2
+
 config_object = configparser.ConfigParser()
 
 # Section for opening and reading the ini file into a single object
@@ -143,7 +145,7 @@ def write_data(person, status):
         f.close()
 
 
-# Communication with the status panel db 
+# Communication with the status panel db online, it comms with google (might make it run on a seperate thread for more efficiency)
 def status_updater(cardNum, tMaId):
     maIdc = get_values(
         sId,
@@ -269,7 +271,17 @@ goalBlock = 10
 
 # The main method of the program, and acts as the main area where code is executed and sequenced from
 if __name__ == "__main__":
-    # might be some issues here and there but we gon work them out lol
     while True:
-        print(read_data_from_block(goalBlock))
+        (cUser, cStat) = read_data() # Used first to check if someones using the machine, and then uses that information to then produce a light set
+        # Here is where lighting will go
+        # Add lighting for the cool gamer color...
+        badge = read_card()
+        # Here is how this pos determines the person inside ;)
+        if cUser == str(badge):
+            write_data("None", "Inactive") # If the same person taps, the machine goes idle
+        else:
+            write_data(str(badge), "Active") # Otherwise, kick that person out and start a new session    
+        status_updater(badge, linkedMachine) # Does the same as the above, but reflects the changes to the google sheet lol ()
+        
+
 
